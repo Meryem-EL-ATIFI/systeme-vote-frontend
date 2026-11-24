@@ -62,7 +62,6 @@ export default function Home() {
           <div>
             <span className="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded uppercase tracking-wider">Démonstration</span>
             <h2 className="text-3xl md:text-4xl font-extrabold mt-2 tracking-tight">SCRUTIN ÉLECTRONIQUE 2026</h2>
-            <p className="text-emerald-200 text-sm mt-1">Vérification d’identité AWS et vote sur Oracle OCI</p>
           </div>
         </div>
       </div>
