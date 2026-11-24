@@ -16,7 +16,7 @@ test('dashboard shows the live Oracle aggregates and can refresh them', async ()
   render(<DashboardPage />);
   expect(await screen.findByText('4', { exact: true })).toBeTruthy();
   expect(screen.getByText('3', { exact: true })).toBeTruthy();
-  expect(screen.getByText(/données de démonstration préexistantes/i)).toBeTruthy();
+  expect(screen.queryByText(/données de démonstration préexistantes/i)).toBeNull();
   expect(screen.queryByText(/résultats par liste/i)).toBeNull();
   await userEvent.click(screen.getByRole('button', { name: /Actualiser/i }));
   await waitFor(() => expect(screen.getByText('5', { exact: true })).toBeTruthy());

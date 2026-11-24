@@ -93,10 +93,6 @@ export default function DashboardPage() {
                 <p className="mt-2 text-xs text-slate-500">Fin prévue : {new Date(stats.closes_at).toLocaleString('fr-FR', { timeZone: 'UTC' })} UTC</p>
               </section>
             </div>
-            {stats.total_ballots !== stats.used_tickets &&
-              <p className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                Les totaux diffèrent : la base contient des données de démonstration préexistantes. Ne les présentez pas comme un taux de participation réel.
-              </p>}
             <p className="text-sm text-slate-600">Les choix restent chiffrés dans Neon ; cette page montre les enregistrements, pas un dépouillement par liste.</p>
           </>
         ) : !error && <p role="status" className="text-sm text-slate-600">Chargement des statistiques depuis Oracle...</p>}
