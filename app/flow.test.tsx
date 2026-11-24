@@ -30,7 +30,7 @@ test('the identity form checks AWS and carries its real token to the vote page',
   expect(JSON.parse(sessionStorage.getItem('voting-ticket') || '{}').token).toBe('aws-signed-ticket');
 });
 
-test('optional notification email is sent to AWS verification, not required to vote', async () => {
+test('optional email is sent to AWS verification and kept with the ticket for the vote receipt', async () => {
   const fetcher = vi.fn(async () => new Response(JSON.stringify({
     token: 'aws-signed-ticket', election_id: 'demo-2026', expires_at: '2099-01-01T00:00:00Z',
   }), { status: 201 }));
@@ -41,11 +41,22 @@ test('optional notification email is sent to AWS verification, not required to v
   await userEvent.type(screen.getByLabelText('Numéro de CIN'), 'AB123456');
   fireEvent.change(screen.getByLabelText('Date de naissance'), { target: { value: '1995-04-12' } });
   await userEvent.type(screen.getByLabelText(/Adresse e-mail/i), 'amina@example.test');
-  expect(screen.getByText(/aucun code PIN/i)).toBeTruthy();
+  expect(screen.getByText(/e-mail de confirmation/i)).toBeTruthy();
   await userEvent.click(screen.getByRole('button', { name: /Vérifier l'identité/i }));
   await waitFor(() => expect(push).toHaveBeenCalledWith('/vote'));
   expect(JSON.parse((fetcher.mock.calls[0] as unknown as [string, RequestInit])[1].body as string).email).toBe('amina@example.test');
-  expect(sessionStorage.getItem('notification-email')).toBeNull();
+  expect(JSON.parse(sessionStorage.getItem('voting-ticket') as string).email).toBe('amina@example.test');
+});
+
+test('the ballot page sends the stored email with the vote', async () => {
+  sessionStorage.setItem('voting-ticket', JSON.stringify({ token: 'aws-signed-ticket', election_id: 'demo-2026', expires_at: '2099-01-01T00:00:00Z', email: 'amina@example.test' }));
+  const fetcher = vi.fn(async () => new Response(JSON.stringify({ status: 'recorded', receipt: 'r-1' }), { status: 201 }));
+  vi.stubGlobal('fetch', fetcher);
+  render(<VotePage />);
+  await userEvent.click(await screen.findByText('Liste A (PDA)'));
+  await userEvent.click(screen.getByRole('button', { name: /Confirmer mon choix/i }));
+  await screen.findByText(/r-1/);
+  expect(JSON.parse((fetcher.mock.calls[0] as unknown as [string, RequestInit])[1].body as string).email).toBe('amina@example.test');
 });
 
 test('a rejected identity stays on the form without a ticket', async () => {
