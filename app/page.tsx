@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import Steps from '@/components/Steps';
 import { ELECTION_ID, verifyIdentity, VotingApiError } from '@/lib/voting-api';
 
 function verificationMessage(error: unknown): string {
@@ -17,8 +19,17 @@ function verificationMessage(error: unknown): string {
       default: return 'Vérification impossible. Veuillez réessayer.';
     }
   }
-  return 'Service de vérification AWS inaccessible. Veuillez réessayer.';
+  return 'Service de vérification inaccessible. Veuillez réessayer.';
 }
+
+const inputClass = 'mt-1.5 block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-700 focus:ring-4 focus:ring-emerald-100';
+const labelClass = 'block text-sm font-medium text-slate-700';
+
+const highlights = [
+  { title: 'Identité vérifiée', text: 'Contrôle de votre carte nationale.' },
+  { title: 'Vote anonyme', text: 'Votre choix n’est jamais lié à votre identité.' },
+  { title: 'Confirmation', text: 'Reçu immédiat, confirmation par e-mail.' },
+];
 
 export default function Home() {
   const router = useRouter();
@@ -56,58 +67,74 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col font-sans">
-      <Header />
-      <div className="w-full bg-emerald-900 text-white py-8 px-6 shadow-md relative overflow-hidden border-b-4 border-red-600">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center relative z-10">
-          <div>
-            <span className="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded uppercase tracking-wider">Démonstration</span>
-            <h2 className="text-3xl md:text-4xl font-extrabold mt-2 tracking-tight">SCRUTIN ÉLECTRONIQUE 2026</h2>
-          </div>
-        </div>
-      </div>
-      <main className="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden p-8">
-          <div className="text-center mb-6">
-            <h3 className="text-xl font-bold text-slate-900">Identification du Votant</h3>
-            <p className="text-xs text-slate-500 mt-1">Veuillez renseigner vos informations d’état civil et votre CIN</p>
-          </div>
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            {error && <div role="alert" className="bg-red-50 border-l-4 border-red-500 p-3 text-xs text-red-700">{error}</div>}
-            <div>
-              <label htmlFor="nom" className="block text-xs font-bold text-slate-700 uppercase">Nom</label>
-              <input id="nom" type="text" name="nom" required value={formData.nom} onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-emerald-600 focus:border-emerald-600 text-sm text-slate-900" />
-            </div>
-            <div>
-              <label htmlFor="prenom" className="block text-xs font-bold text-slate-700 uppercase">Prénom</label>
-              <input id="prenom" type="text" name="prenom" required value={formData.prenom} onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-emerald-600 focus:border-emerald-600 text-sm text-slate-900" />
-            </div>
-            <div>
-              <label htmlFor="cin" className="block text-xs font-bold text-slate-700 uppercase">Numéro de CIN</label>
-              <input id="cin" type="text" name="cin" required value={formData.cin} onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm uppercase focus:ring-emerald-600 focus:border-emerald-600 text-sm text-slate-900" />
-            </div>
-            <div>
-              <label htmlFor="birth_date" className="block text-xs font-bold text-slate-700 uppercase">Date de naissance</label>
-              <input id="birth_date" type="date" name="birth_date" required value={formData.birth_date} onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-emerald-600 focus:border-emerald-600 text-sm text-slate-900" />
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-xs font-bold text-slate-700 uppercase">Adresse e-mail (facultatif)</label>
-              <input id="email" type="email" name="email" autoComplete="email" maxLength={254}
-                value={formData.email} onChange={handleChange} aria-describedby="email-help"
-                className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-emerald-600 focus:border-emerald-600 text-sm text-slate-900" />
-              <p id="email-help" className="mt-1 text-xs text-slate-600">Vous recevrez un e-mail de confirmation après votre vote.</p>
-            </div>
-            <button type="submit" disabled={loading}
-              className="w-full mt-2 py-3 px-4 border border-transparent rounded-md shadow text-sm font-bold text-white bg-emerald-800 hover:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-700 transition disabled:opacity-50">
-              {loading ? 'Vérification en cours...' : "Vérifier l'identité & Accéder à l'urne"}
-            </button>
-          </form>
+    <div className="flex min-h-screen flex-col bg-slate-50 font-sans text-slate-900">
+      <Header active="vote" />
+      <main className="relative flex-grow overflow-hidden">
+        <div aria-hidden="true" className="absolute inset-x-0 top-0 h-[420px] bg-gradient-to-br from-emerald-950 via-emerald-900 to-emerald-800 lg:h-full" />
+        <div className="relative mx-auto grid max-w-6xl gap-10 px-5 py-12 sm:px-8 lg:grid-cols-2 lg:gap-16 lg:py-20">
+          <section className="text-white lg:pt-6">
+            <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-emerald-100 ring-1 ring-white/15">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" /> Scrutin ouvert
+            </p>
+            <h1 className="mt-5 text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl">
+              Votre voix compte.<br />Votez en ligne.
+            </h1>
+            <p className="mt-4 max-w-md text-base text-emerald-100/90">
+              Identifiez-vous, choisissez votre liste et recevez votre confirmation en moins d’une minute.
+            </p>
+            <ul className="mt-10 hidden space-y-5 lg:block">
+              {highlights.map(item => (
+                <li key={item.title} className="flex gap-3">
+                  <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-emerald-400/15 text-xs text-emerald-200 ring-1 ring-emerald-300/30">✓</span>
+                  <span>
+                    <span className="block text-sm font-semibold">{item.title}</span>
+                    <span className="block text-sm text-emerald-100/80">{item.text}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xl shadow-emerald-950/10 sm:p-8">
+            <Steps current={1} />
+            <h2 className="mt-6 text-xl font-semibold tracking-tight">Identification</h2>
+            <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+              {error && <div role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-800">{error}</div>}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="nom" className={labelClass}>Nom</label>
+                  <input id="nom" type="text" name="nom" required autoComplete="family-name" value={formData.nom} onChange={handleChange} className={inputClass} />
+                </div>
+                <div>
+                  <label htmlFor="prenom" className={labelClass}>Prénom</label>
+                  <input id="prenom" type="text" name="prenom" required autoComplete="given-name" value={formData.prenom} onChange={handleChange} className={inputClass} />
+                </div>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="cin" className={labelClass}>Numéro de CIN</label>
+                  <input id="cin" type="text" name="cin" required placeholder="AB123456" value={formData.cin} onChange={handleChange} className={`${inputClass} uppercase`} />
+                </div>
+                <div>
+                  <label htmlFor="birth_date" className={labelClass}>Date de naissance</label>
+                  <input id="birth_date" type="date" name="birth_date" required value={formData.birth_date} onChange={handleChange} className={inputClass} />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="email" className={labelClass}>Adresse e-mail <span className="font-normal text-slate-400">(facultatif)</span></label>
+                <input id="email" type="email" name="email" autoComplete="email" maxLength={254} placeholder="nom@exemple.com"
+                  value={formData.email} onChange={handleChange} aria-describedby="email-help" className={inputClass} />
+                <p id="email-help" className="mt-1.5 text-xs text-slate-500">Pour recevoir l’e-mail de confirmation.</p>
+              </div>
+              <button type="submit" disabled={loading}
+                className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-900 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-800 focus:outline-none focus:ring-4 focus:ring-emerald-200 disabled:cursor-not-allowed disabled:opacity-60">
+                {loading ? 'Vérification…' : <>{"Vérifier l'identité"} <span aria-hidden="true">→</span></>}
+              </button>
+            </form>
+          </section>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }
