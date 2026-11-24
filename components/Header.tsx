@@ -30,6 +30,8 @@ export default function Header() {
           <span className="text-slate-300">|</span>
           <span className="text-slate-400 cursor-not-allowed">Élections 2026</span>
           <span className="text-slate-300">|</span>
+          <Link href="/dashboard" className="hover:text-emerald-700 transition">Tableau de bord</Link>
+          <span className="text-slate-300">|</span>
           <span className="text-slate-400 cursor-not-allowed">Sécurité & Zero-Trust</span>
         </nav>
       </div>
