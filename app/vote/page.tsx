@@ -42,7 +42,7 @@ export default function VotePage() {
     setLoading(true);
     setError('');
     try {
-      const result = await submitBallot(ticket.token, selectedParty);
+      const result = await submitBallot(ticket.token, selectedParty, { email: ticket.email });
       sessionStorage.removeItem('voting-ticket');
       setReceipt(result.receipt);
     } catch (err) {

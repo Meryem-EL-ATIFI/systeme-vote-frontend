@@ -13,11 +13,14 @@ export type VotingTicket = {
   token: string;
   election_id: string;
   expires_at: string;
+  /** Optional address for the post-vote "thanks for voting" email. */
+  email?: string;
 };
 
 export type CandidateId = 'candidate-a' | 'candidate-b';
 
 type RequestOptions = { baseUrl?: string; fetcher?: typeof fetch };
+type BallotOptions = RequestOptions & { email?: string };
 
 export class VotingApiError extends Error {
   readonly status: number;
@@ -64,9 +67,11 @@ export async function verifyIdentity(input: IdentityInput, options: RequestOptio
   return { token: data.token, election_id: ELECTION_ID, expires_at: data.expires_at };
 }
 
-export async function submitBallot(token: string, candidateId: CandidateId, options: RequestOptions = {}): Promise<{ receipt: string }> {
+export async function submitBallot(token: string, candidateId: CandidateId, options: BallotOptions = {}): Promise<{ receipt: string }> {
+  const email = options.email?.trim();
   const data = await postJson(options.baseUrl ?? ballotUrl, '/vote', {
     token, election_id: ELECTION_ID, candidate_id: candidateId,
+    ...(email ? { email } : {}),
   }, options.fetcher ?? fetch);
   if (!data || typeof data !== 'object' || !('status' in data) || data.status !== 'recorded' ||
       !('receipt' in data) || typeof data.receipt !== 'string' || !data.receipt) {

@@ -45,7 +45,8 @@ export default function Home() {
         election_id: ELECTION_ID,
         ...(formData.email.trim() ? { email: formData.email.trim() } : {}),
       });
-      sessionStorage.setItem('voting-ticket', JSON.stringify(ticket));
+      const email = formData.email.trim();
+      sessionStorage.setItem('voting-ticket', JSON.stringify(email ? { ...ticket, email } : ticket));
       router.push('/vote');
     } catch (err) {
       setError(verificationMessage(err));
@@ -99,7 +100,7 @@ export default function Home() {
               <input id="email" type="email" name="email" autoComplete="email" maxLength={254}
                 value={formData.email} onChange={handleChange} aria-describedby="email-help"
                 className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-emerald-600 focus:border-emerald-600 text-sm text-slate-900" />
-              <p id="email-help" className="mt-1 text-xs text-slate-600">Pour une notification si ce service est activé. Aucun code PIN n’est envoyé pour le moment.</p>
+              <p id="email-help" className="mt-1 text-xs text-slate-600">Vous recevrez un e-mail de confirmation après votre vote.</p>
             </div>
             <button type="submit" disabled={loading}
               className="w-full mt-2 py-3 px-4 border border-transparent rounded-md shadow text-sm font-bold text-white bg-emerald-800 hover:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-700 transition disabled:opacity-50">
