@@ -22,7 +22,7 @@ function verificationMessage(error: unknown): string {
 
 export default function Home() {
   const router = useRouter();
-  const [formData, setFormData] = useState({ nom: '', prenom: '', cin: '', birth_date: '' });
+  const [formData, setFormData] = useState({ nom: '', prenom: '', cin: '', birth_date: '', email: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -43,6 +43,7 @@ export default function Home() {
         last_name: formData.nom,
         birth_date: formData.birth_date,
         election_id: ELECTION_ID,
+        ...(formData.email.trim() ? { email: formData.email.trim() } : {}),
       });
       sessionStorage.setItem('voting-ticket', JSON.stringify(ticket));
       router.push('/vote');
@@ -92,6 +93,13 @@ export default function Home() {
               <label htmlFor="birth_date" className="block text-xs font-bold text-slate-700 uppercase">Date de naissance</label>
               <input id="birth_date" type="date" name="birth_date" required value={formData.birth_date} onChange={handleChange}
                 className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-emerald-600 focus:border-emerald-600 text-sm text-slate-900" />
+            </div>
+            <div>
+              <label htmlFor="email" className="block text-xs font-bold text-slate-700 uppercase">Adresse e-mail (facultatif)</label>
+              <input id="email" type="email" name="email" autoComplete="email" maxLength={254}
+                value={formData.email} onChange={handleChange} aria-describedby="email-help"
+                className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:ring-emerald-600 focus:border-emerald-600 text-sm text-slate-900" />
+              <p id="email-help" className="mt-1 text-xs text-slate-600">Pour une notification si ce service est activé. Aucun code PIN n’est envoyé pour le moment.</p>
             </div>
             <button type="submit" disabled={loading}
               className="w-full mt-2 py-3 px-4 border border-transparent rounded-md shadow text-sm font-bold text-white bg-emerald-800 hover:bg-emerald-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-700 transition disabled:opacity-50">

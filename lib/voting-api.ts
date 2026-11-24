@@ -6,6 +6,7 @@ export type IdentityInput = {
   last_name: string;
   birth_date: string;
   election_id: typeof ELECTION_ID;
+  email?: string;
 };
 
 export type VotingTicket = {
